@@ -1,5 +1,6 @@
 import random
-import sys
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import graphic.camera as camera
 import graphic.maps as maps
@@ -33,27 +34,31 @@ def main():
     traffic_lamp1 = traffic_lamp.TrafficLamp(maps.TRAFFIC_LAMP_COORDINATES[0])
     traffic_lamp2 = traffic_lamp.TrafficLamp(maps.TRAFFIC_LAMP_COORDINATES[1])
 
-    print(maps.TRAFFIC_LAMP_COORDINATES[0])
-    print(maps.TRAFFIC_LAMP_COORDINATES[1])
+    print("traffic lamp coordinates: ", maps.TRAFFIC_LAMP_COORDINATES[0])
+    print("traffic lamp coordinates: ",maps.TRAFFIC_LAMP_COORDINATES[1])
 
     start_angle = calculate_angle(maps.MAP_NAVS[0][0],
                                   maps.MAP_NAVS[0][1], maps.MAP_NAVS[1][0], maps.MAP_NAVS[1][1])
-    # print("Start angle: ", start_angle)
-    # print("Finish index: ", maps.FINISH_INDEX)
-
+    # tính góc của xe: input x1, y1, x2, y2
+    print("Start angle: ", start_angle)
+    print("Finish index: ", maps.FINISH_INDEX)
+# khởi tạo đối tượng car với tọa độ x, y và góc hướng
     controlled_car = car.Car(start_x, start_y, start_angle)
-    cars = pygame.sprite.Group()
+    cars = pygame.sprite.Group() # nhóm đối tượng car
     cars.add(controlled_car)
 
-    traffic_lamps = pygame.sprite.Group()
+# sprite: 1 đối tượng trong game
+# sprite.group: nhóm các đối tượng vào cùng 1 group để thực hiện việc vẽ lại đồng thời
+    traffic_lamps = pygame.sprite.Group() # nhóm các đối tượng đèn
     traffic_lamps.add(traffic_lamp1)
     traffic_lamps.add(traffic_lamp2)
 
-    stones = pygame.sprite.Group()
+    stones = pygame.sprite.Group() # nhóm đối tượng stone
     stones.add(stone_impediment)
 
     stone_status = (stone_impediment.status, len(maps.MAP_NAVS) - 1)
 
+# di chuyển camera theo car
     cam.set_pos(controlled_car.x, controlled_car.y)
     flag = 0
 
