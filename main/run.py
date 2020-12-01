@@ -1,26 +1,21 @@
 import random
-import os, sys
+import os
+import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-
-import graphic.camera as camera
-import graphic.maps as maps
-import pygame
-import graphic.stone as stone
-import graphic.traffic_lamp as traffic_lamp
-from pygame.locals import *
-
-from graphic import car
 from graphic.car import calculate_angle
-
+from graphic import car
+from pygame.locals import *
+import graphic.traffic_lamp as traffic_lamp
+import graphic.stone as stone
+import pygame
+import graphic.maps as maps
+import graphic.camera as camera
 
 def main():
     clock = pygame.time.Clock()
     running = True
 
     cam = camera.Camera()
-
-    # traffic_lamp1 = traffic_lamp.TrafficLamp(1610, 420, 90, 0)
-    # traffic_lamp2 = traffic_lamp.TrafficLamp(2710, 1520, 90, 1)
 
     stone_impediment = stone.Stone(200, 200, 90, 0)
 
@@ -29,13 +24,7 @@ def main():
 
     start_x = maps.MAP_NAVS[0][0]
     start_y = maps.MAP_NAVS[0][1]
-    maps.FINISH_INDEX = len(maps.MAP_NAVS) - 2
-
-    traffic_lamp1 = traffic_lamp.TrafficLamp(maps.TRAFFIC_LAMP_COORDINATES[0])
-    traffic_lamp2 = traffic_lamp.TrafficLamp(maps.TRAFFIC_LAMP_COORDINATES[1])
-
-    print("traffic lamp coordinates: ", maps.TRAFFIC_LAMP_COORDINATES[0])
-    print("traffic lamp coordinates: ",maps.TRAFFIC_LAMP_COORDINATES[1])
+    maps.FINISH_INDEX = len(maps.MAP_NAVS) - 1
 
     start_angle = calculate_angle(maps.MAP_NAVS[0][0],
                                   maps.MAP_NAVS[0][1], maps.MAP_NAVS[1][0], maps.MAP_NAVS[1][1])
@@ -44,16 +33,16 @@ def main():
     print("Finish index: ", maps.FINISH_INDEX)
 # khởi tạo đối tượng car với tọa độ x, y và góc hướng
     controlled_car = car.Car(start_x, start_y, start_angle)
-    cars = pygame.sprite.Group() # nhóm đối tượng car
+    cars = pygame.sprite.Group()  # nhóm đối tượng car
     cars.add(controlled_car)
 
 # sprite: 1 đối tượng trong game
 # sprite.group: nhóm các đối tượng vào cùng 1 group để thực hiện việc vẽ lại đồng thời
-    traffic_lamps = pygame.sprite.Group() # nhóm các đối tượng đèn
-    traffic_lamps.add(traffic_lamp1)
-    traffic_lamps.add(traffic_lamp2)
+    traffic_lamps = pygame.sprite.Group()  # nhóm các đối tượng đèn
+    for lamp_pos in maps.TRAFFIC_LAMP_COORDINATES:
+        traffic_lamps.add(traffic_lamp.TrafficLamp(lamp_pos))
 
-    stones = pygame.sprite.Group() # nhóm đối tượng stone
+    stones = pygame.sprite.Group()  # nhóm đối tượng stone
     stones.add(stone_impediment)
 
     stone_status = (stone_impediment.status, len(maps.MAP_NAVS) - 1)
@@ -89,7 +78,8 @@ def main():
                 if pressed1:
                     print("left click")
                     current_index = controlled_car.current_nav_index
-                    random_index = random.randrange(current_index + 3, current_index + 6)
+                    random_index = random.randrange(
+                        current_index + 3, current_index + 6)
                     if random_index <= (len(maps.MAP_NAVS) - 3) and stone_impediment.status == 0:
                         x = maps.MAP_NAVS[random_index][0]
                         y = maps.MAP_NAVS[random_index][1]
@@ -115,14 +105,10 @@ def main():
         stones.update(cam.x, cam.y)
         stones.draw(screen)
 
-        # for lamp in traffic_lamps:
-        #     lamp_status = lamp.render(screen)
-        #     traffic_lamps_status.append(lamp_status)
-        lamp_status1 = traffic_lamp1.render(screen)
-        lamp_status2 = traffic_lamp2.render(screen)
+        for lamp in traffic_lamps:
+            lamp_status = lamp.render(screen)
+            traffic_lamps_status.append(lamp_status)
 
-        traffic_lamps_status.append(lamp_status1)
-        traffic_lamps_status.append(lamp_status2)
         # update and render car
         cars.update(cam.x, cam.y, traffic_lamps_status, stone_status, flag)
         cars.draw(screen)
@@ -135,7 +121,7 @@ def main():
 if __name__ == "__main__":
     pygame.init()
 
-    screen = pygame.display.set_mode((1200, 600))
+    screen = pygame.display.set_mode((1600, 1000))
     pygame.display.set_caption("Self Driving Car")
     pygame.mouse.set_visible(True)
     font = pygame.font.Font(None, 24)
