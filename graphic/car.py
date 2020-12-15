@@ -45,12 +45,12 @@ class Car(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect_w = self.rect.size[0]
         self.rect_h = self.rect.size[1]
-        self.image_orig = self.image
+        self.image_orig = pygame.transform.scale(self.image, (int(self.rect_w / 2), int(self.rect_h / 2)))
         self.screen = pygame.display.get_surface()
         self.area = self.screen.get_rect()
         self.x = init_x
         self.y = init_y
-        self.rect.topleft = 600 - self.rect_w / 2, 300 - self.rect_h / 2
+        self.rect.topleft = 800 - self.rect_w / 2, 500 - self.rect_h / 2
 
         self.dir = init_dir
         self.image, self.rect = rot_center(self.image_orig, self.rect, self.dir)
@@ -110,17 +110,17 @@ class Car(pygame.sprite.Sprite):
     def calculate_distance_lamp(self):
         for i in range(len(TRAFFIC_LAMP_POS)):
             pos = TRAFFIC_LAMP_POS[i]
-            if self.current_nav_index < pos:
+            if  self.current_nav_index < pos:
                 distance_to_lamp = math.hypot(MAP_NAVS[pos][0] - self.x, MAP_NAVS[pos][1] - self.y)
                 if self.current_lamp_pos != i:
                     self.current_lamp_pos = i
 
                 return distance_to_lamp
-        return 2000
+        return 200000
 
     def calculate_distance_impediment(self, stone_status):
         if stone_status[0] == 0:
-            return 2000
+            return 200000
         pos = stone_status[1]
         distance_to_impediment = math.hypot(MAP_NAVS[pos][0] - self.x, MAP_NAVS[pos][1] - self.y)
         return distance_to_impediment
@@ -200,7 +200,7 @@ class Car(pygame.sprite.Sprite):
                     print("--------------------------------------------------------------------------")
                 else:
                     distance_tmp = self.calculate_distance_lamp()
-
+                    print("OKKK :", self.current_lamp_pos)
                     lamp_status_tmp = traffic_lamp_status[self.current_lamp_pos]
                     # print("current lamp pos: ", self.current_lamp_pos, ", status: ", lamp_status_tmp)
                     # print(distance_tmp, " - ", cal_distance_dependencies(distance_tmp))

@@ -40,4 +40,4 @@ class Stone(pygame.sprite.Sprite):
 
     # Realign the map
     def update(self, cam_x, cam_y):
-        self.rect.center = self.x - cam_x + 600, self.y - cam_y + 300
+        self.rect.center = self.x - cam_x + 800, self.y - cam_y + 500

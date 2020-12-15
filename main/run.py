@@ -50,7 +50,7 @@ def main():
 # di chuyển camera theo car
     cam.set_pos(controlled_car.x, controlled_car.y)
     flag = 0
-
+    pygame.display.flip()
     while running:
         flag += 1
         keys = pygame.key.get_pressed()
@@ -112,7 +112,10 @@ def main():
         # update and render car
         cars.update(cam.x, cam.y, traffic_lamps_status, stone_status, flag)
         cars.draw(screen)
-
+        # blue = 230, 30, 30
+        # point1 = 635, 525
+        # point2 = 165, 167
+        # pygame.draw.lines(screen, blue, False, [(100,100), (150,200), (200,100), point1, point2], 5)
         pygame.display.flip()
 
         clock.tick(60)
@@ -120,7 +123,6 @@ def main():
 
 if __name__ == "__main__":
     pygame.init()
-
     screen = pygame.display.set_mode((1600, 1000))
     pygame.display.set_caption("Self Driving Car")
     pygame.mouse.set_visible(True)

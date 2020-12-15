@@ -19,7 +19,8 @@ class TrafficLamp(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         if status is None:
-            status = random.randint(1, 2)
+            # status = random.randint(1, 2)
+            status = 1
         if remaining_time is None:
             remaining_time = random.randint(5, 15) * 60
 
@@ -45,7 +46,8 @@ class TrafficLamp(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         if status is None:
-            status = random.randint(1, 2)
+            # status = random.randint(1, 2)
+            status = 1
         if remaining_time is None:
             remaining_time = random.randint(5, 15) * 60
 
@@ -70,26 +72,44 @@ class TrafficLamp(pygame.sprite.Sprite):
 
     def set_traffic_lamp_img(self):
         if self.status == TrafficLamp.RED:
-            return load_image(TrafficLamp.LAMP_RED_IMG)
+            self.image = load_image(TrafficLamp.LAMP_RED_IMG)
+            self.rect = self.image.get_rect()
+            self.rect_w = self.rect.size[0]
+            self.rect_h = self.rect.size[1]
+            return pygame.transform.scale(self.image, (int(self.rect_w / 2), int(self.rect_h / 2)))
         elif self.status == TrafficLamp.GREEN:
-            return load_image(TrafficLamp.LAMP_GREEN_IMG)
+            self.image = load_image(TrafficLamp.LAMP_GREEN_IMG)
+            self.rect = self.image.get_rect()
+            self.rect_w = self.rect.size[0]
+            self.rect_h = self.rect.size[1]
+            return pygame.transform.scale(self.image, (int(self.rect_w / 2), int(self.rect_h / 2)))
 
     def switch_status(self):
+        # if self.status == TrafficLamp.RED:
+        #     self.pre_status = TrafficLamp.RED
+        #     self.status = TrafficLamp.GREEN
+        #     self.remaining_time = 900
+        # elif self.status == TrafficLamp.GREEN:
+        #     self.pre_status = TrafficLamp.GREEN
+        #     self.status = TrafficLamp.RED
+        #     self.remaining_time = 1200
+
         if self.status == TrafficLamp.RED:
             self.pre_status = TrafficLamp.RED
             self.status = TrafficLamp.GREEN
             self.remaining_time = 900
         elif self.status == TrafficLamp.GREEN:
             self.pre_status = TrafficLamp.GREEN
-            self.status = TrafficLamp.RED
+            self.status = TrafficLamp.GREEN
             self.remaining_time = 1200
+
         self.image = self.set_traffic_lamp_img()
         self.rect = self.image.get_rect()
         pass
 
     # Realign the map
     def update(self, cam_x, cam_y):
-        self.rect.center = self.x - cam_x + 600, self.y - cam_y + 300
+        self.rect.center = self.x - cam_x + 800, self.y - cam_y + 500
         self.remaining_time -= 1
         if self.remaining_time == 0:
             self.switch_status()
