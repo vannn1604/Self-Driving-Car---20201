@@ -1,0 +1,114 @@
+duongdi = [1, 2, 3]  # list diem duong di, returned by get_path
+toado = {1: [32, 43]}  # toa do
+tapcanh = [
+    {1: [22, 33]},
+    {2: [16, 17, 18, 19]},
+    {3: [55, 88]},
+]  # list diem 2 ben cua cac diem trong a
+
+def ptdt(P, Q):
+    # [1,2], [3,4] => ax + by = c
+    a = Q[1] - P[1]
+    b = P[0] - Q[0]
+    c = a * (P[0]) + b * (P[1])
+    return a, b, c
+
+
+def giao_diem(arr1, arr2):
+    # [4,3,32], [4,-2,12] => [x, y]
+    import numpy as np
+
+    a = np.array([[arr1[0], arr1[1]], [arr2[0], arr2[1]]])
+    b = np.array([arr1[2], arr2[2]])
+    try:
+        return np.linalg.solve(a, b)
+    except:
+        return None, None
+
+
+def distance(a, b):
+    import math
+
+    return math.dist(a, b)
+
+
+def nam_giua(a, b, c):
+    # c nam giua a va b
+    crossproduct = (c[1] - a[1]) * (b[0] - a[0]) - (c[0] - a[0]) * (b[1] - a[1])
+
+    dotproduct = (c[0] - a[0]) * (b[0] - a[0]) + (c[1] - a[1]) * (b[1] - a[1])
+    if dotproduct < 0:
+        return False
+
+    squaredlengthba = (b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1])
+    if dotproduct > squaredlengthba:
+        return False
+
+    return True
+
+
+def hai_diem_cungphia_sovoi_dt(a, b, c, x1, y1, x2, y2):
+    # ax + by + c = 0
+    fx1 = 0  # Variable to store a * x1 + b * y1 - c
+    fx2 = 0  # Variable to store a * x2 + b * y2 - c
+
+    fx1 = a * x1 + b * y1 - c
+    fx2 = a * x2 + b * y2 - c
+
+    # If fx1 and fx2 have same sign
+    if (fx1 * fx2) > 0:
+        return True
+
+    return False
+
+
+def hai_doan_cat_nhau(pt1, diem1, diem2, diem3):
+    # [a1, b1, c1], [a2, b2, c2] # ax +by = c
+    # khi giao diem nam tren 1-2 hoac 2-3
+    # pt2 la pt12 hoac pt23
+    ptdt12, ptdt23 = ptdt(diem1, diem2), ptdt(diem2, diem3)
+    x1, y1 = giao_diem(pt1, ptdt12)
+    x2, y2 = giao_diem(pt1, ptdt23)
+    if (x1 is not None and nam_giua([x1, y1], diem1, diem2)) or (
+        x2 is not None and nam_giua([x2, y2], diem2, diem3)
+    ):
+        return True
+    return False
+
+
+def get_tap_canh(i):
+    gop_tapcanh = tapcanh[duongdi[i - 1]] + tapcanh[duongdi[i]]
+    tap1, tap2 = [], []
+    for j in range(1, len(gop_tapcanh) - 1):
+        if hai_diem_cungphia_sovoi_dt(gop_tapcanh[0], gop_tapcanh[j]):
+            tap1.append(gop_tapcanh[j])
+        else:
+            tap2.append(gop_tapcanh[j])
+    kq_temp = []
+    co_cat = False
+    for k in range(0, len(tap1) - 2):
+        for m in range(k + 1, len(tap1) - 1):
+            ptdt_km = ptdt(toado[k], toado[m])
+            if not hai_doan_cat_nhau(ptdt_km, toado[i - 1], toado[i]):
+                kq_temp.append([k, m])
+            else:
+                co_cat = True
+    if not co_cat:
+        max_2diem, max_kc = [], -1
+        for cap in kq_temp:
+            kc = distance(toado[cap[0]], toado[cap[1]])
+            if kc > max_kc:
+                max_2diem, max_kc = cap, kc
+        kq_temp = [cap]
+    return kq_temp
+
+
+if __name__ == "__main__":
+    # ko dc co 2 nga tu lien nhau
+    kq = []
+    for i in range(1, len(duongdi) - 1):
+        if len(toado[duongdi[i]]) == 4:  # nga tu, co 4 diem canh trong tap b
+            kq += get_tap_canh(i)
+            kq += get_tap_canh(i + 1)
+        else:  # ko phai nga tu
+            pass
